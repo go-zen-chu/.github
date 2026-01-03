@@ -5,6 +5,16 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_call:
+    inputs:
+      go-version-file:
+        description: Path to go.mod used by actions/setup-go
+        type: string
+        default: go.mod
+      working-directory:
+        description: Directory to run go commands in (for monorepos)
+        type: string
+        default: .
 
 permissions:
   contents: read
@@ -22,16 +32,21 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: "go.mod"
+          go-version-file: ${{ inputs.go-version-file || 'go.mod' }}
           cache: true
       - name: Verify formatting
         run: |
           test -z "$(gofmt -l .)"
+        working-directory: ${{ inputs.working-directory || '.' }}
       - name: Vet
         run: go vet ./...
+        working-directory: ${{ inputs.working-directory || '.' }}
       - name: Build
         run: go build -v ./...
+        working-directory: ${{ inputs.working-directory || '.' }}
       - name: Test
         run: go test -v -shuffle=on ./...
+        working-directory: ${{ inputs.working-directory || '.' }}
       - name: Test (race)
         run: go test -race ./...
+        working-directory: ${{ inputs.working-directory || '.' }}
