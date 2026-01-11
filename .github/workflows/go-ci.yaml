@@ -1,10 +1,6 @@
 name: Go general check (gofmt, vet, build, test)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_call:
     inputs:
       go-version-file:
